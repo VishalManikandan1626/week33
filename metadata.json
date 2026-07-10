@@ -1,0 +1,6 @@
+{
+  "name": "Task Management Application",
+  "description": "An internship-grade Task Management Application featuring stats counters, priority/category management, due dates, local storage persistence, dark mode, toast notifications, search/filter, and a beautiful UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

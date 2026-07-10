@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management Application - Internship Submission</title>
+  
+  <!-- Tailwind CSS Play CDN (Enables all utility styling out-of-the-box) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styling Link (For custom scrollbars, animations, and transitions) -->
+  <link rel="stylesheet" href="style.css">
+
+  <script>
+    // Tailwind Config for Dark Mode support and Font configurations
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-200 font-sans min-h-screen">
+
+  <!-- Decorative Gradient Header Accent -->
+  <div class="h-2.5 bg-gradient-to-r from-violet-600 via-indigo-500 to-emerald-500"></div>
+
+  <!-- Main Container -->
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    
+    <!-- Top Nav Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="p-2 bg-indigo-500 text-white rounded-xl shadow-md shadow-indigo-500/10">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </span>
+          <h1 class="text-2xl font-black font-display tracking-tight text-zinc-900 dark:text-white">
+            Task Dashboard
+          </h1>
+        </div>
+        <p id="current-date" class="text-sm text-zinc-400 dark:text-zinc-500 font-medium font-mono">
+          <!-- Populated by JavaScript -->
+          Friday, July 10, 2026
+        </p>
+      </div>
+
+      <!-- Action Toggles -->
+      <div class="flex items-center gap-3">
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="p-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl transition-all shadow-sm hover:scale-105" title="Toggle Dark/Light Mode">
+          <i data-lucide="moon" id="theme-icon-dark" class="w-5 h-5"></i>
+          <i data-lucide="sun" id="theme-icon-light" class="w-5 h-5 hidden"></i>
+        </button>
+
+        <!-- Create Task Trigger -->
+        <button id="open-form-btn" class="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-500/10 hover:scale-[1.02] cursor-pointer">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+          Create Task
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Statistics Section -->
+    <section class="space-y-6">
+      <!-- Status Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Total Card -->
+        <div class="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Total Tasks</span>
+              <h3 id="stat-total" class="text-3xl font-bold font-display text-zinc-900 dark:text-zinc-50">0</h3>
+            </div>
+            <div class="p-3 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+              <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500/20"></div>
+        </div>
+
+        <!-- Completed Card -->
+        <div class="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Completed</span>
+              <h3 id="stat-completed" class="text-3xl font-bold font-display text-emerald-600 dark:text-emerald-400">0</h3>
+            </div>
+            <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+              <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500/20"></div>
+        </div>
+
+        <!-- Pending Card -->
+        <div class="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="space-y-1">
+              <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Pending</span>
+              <h3 id="stat-pending" class="text-3xl font-bold font-display text-amber-600 dark:text-amber-400">0</h3>
+            </div>
+            <div class="p-3 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 rounded-xl">
+              <i data-lucide="clock" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500/20"></div>
+        </div>
+      </div>
+
+      {/* Progress Bar Container */}
+      <div class="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Task Completion Progress</span>
+            <span id="progress-text" class="text-xs font-mono text-zinc-400">(0 of 0 completed)</span>
+          </div>
+          <span id="progress-percent" class="text-sm font-bold font-mono text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+        <div class="w-full h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+          <div id="progress-fill" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-500 ease-out w-0"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Search Panel -->
+    <section class="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-5 rounded-2xl shadow-sm space-y-4">
+      <div class="flex flex-col md:flex-row gap-3">
+        <!-- Search bar input -->
+        <div class="relative flex-grow">
+          <i data-lucide="search" class="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-400"></i>
+          <input type="text" id="search-input" placeholder="Search tasks by title, description..." class="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all">
+        </div>
+
+        <!-- Sorting dropdown -->
+        <div class="flex items-center gap-2 min-w-[160px]">
+          <span class="text-xs font-bold text-zinc-400 dark:text-zinc-500 font-mono uppercase whitespace-nowrap">Sort:</span>
+          <select id="sort-select" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-semibold focus:outline-none">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="dueDate">Due Date</option>
+            <option value="priority">High Priority</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category / Priority Filtering line -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
+        <div class="flex flex-wrap gap-4 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+          <!-- Status toggler tabs -->
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-wide text-[10px]">Status:</span>
+            <div class="flex rounded-lg bg-zinc-100 dark:bg-zinc-800 p-0.5 border border-zinc-200/40">
+              <button id="filter-status-all" class="px-3 py-1 text-xs rounded-md transition-colors font-bold bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white">All</button>
+              <button id="filter-status-completed" class="px-3 py-1 text-xs rounded-md transition-colors">Completed</button>
+              <button id="filter-status-pending" class="px-3 py-1 text-xs rounded-md transition-colors">Pending</button>
+            </div>
+          </div>
+
+          <!-- Category dropdown filter -->
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-wide text-[10px]">Category:</span>
+            <select id="filter-category" class="px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs">
+              <option value="All">All Categories</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Study">Study</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Priority dropdown filter -->
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-wide text-[10px]">Priority:</span>
+            <select id="filter-priority" class="px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs">
+              <option value="All">All Priorities</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Reset Filters Trigger -->
+        <button id="reset-filters" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 hidden">
+          Reset Filters
+        </button>
+      </div>
+    </section>
+
+    <!-- Task List Container Section -->
+    <main class="space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-zinc-200/50 dark:border-zinc-800/60">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">
+          Tasks List (<span id="task-count">0</span>)
+        </h2>
+
+        <!-- Bulk action triggers -->
+        <div class="flex items-center gap-4 text-xs font-semibold text-zinc-400">
+          <button id="clear-completed-btn" class="flex items-center gap-1 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+            <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+            <span>Clear Completed</span>
+          </button>
+          <span class="w-px h-3 bg-zinc-200 dark:bg-zinc-800"></span>
+          <button id="clear-all-btn" class="flex items-center gap-1 hover:text-rose-600 dark:hover:text-rose-400 transition-colors">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Cards Stack (Scrollable) -->
+      <div id="tasks-container" class="max-h-[550px] overflow-y-auto pr-1 space-y-3.5">
+        <!-- Task items dynamically injected by Vanilla JS -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ================= OVERLAYS & MODALS ================= -->
+
+  <!-- 1. Task Creation / Edit Form Modal -->
+  <div id="form-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 hidden">
+    <!-- Modal Backdrop -->
+    <div id="form-modal-backdrop" class="absolute inset-0 bg-zinc-950/50 backdrop-blur-xs"></div>
+    
+    <!-- Modal Container -->
+    <div class="relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 overflow-hidden z-50 transform scale-95 opacity-0 transition-all duration-200" id="form-modal-content">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4 mb-4">
+        <h3 id="modal-title" class="text-lg font-bold font-display text-zinc-900 dark:text-zinc-50">Create New Task</h3>
+        <button id="close-form-btn" class="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Validation Error Banner -->
+      <div id="validation-error" class="mb-4 p-3 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl text-sm font-medium border border-rose-200/40 hidden">
+        Please fill out required fields.
+      </div>
+
+      <!-- Input Fields -->
+      <form id="task-form" class="space-y-4">
+        <input type="hidden" id="edit-task-id">
+        
+        <!-- Title -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Task Title *</label>
+          <input type="text" id="task-title-input" placeholder="e.g., Draft marketing plan" class="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm" required>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Description</label>
+          <textarea id="task-desc-input" placeholder="Enter further notes or parameters..." rows="3" class="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm resize-none"></textarea>
+        </div>
+
+        <!-- Category & Priority Split Row -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Category Selection -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Category</label>
+            <select id="task-category-input" class="w-full px-3 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2">
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Study">Study</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Priority Selection -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono">Priority</label>
+            <select id="task-priority-input" class="w-full px-3 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Due Date Selection -->
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-mono flex items-center gap-1">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Due Date
+          </label>
+          <input type="date" id="task-date-input" class="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+        </div>
+
+        <!-- Form Submit Footer Buttons -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800 mt-6">
+          <button type="button" id="cancel-form-btn" class="px-4 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">Cancel</button>
+          <button type="submit" id="save-task-btn" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg transition-colors">
+            <i data-lucide="plus" class="w-4 h-4" id="submit-icon-add"></i>
+            <i data-lucide="save" class="w-4 h-4 hidden" id="submit-icon-edit"></i>
+            <span id="submit-btn-text">Add Task</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Deletion Confirmation Modal -->
+  <div id="delete-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 hidden">
+    <!-- Modal Backdrop -->
+    <div id="delete-modal-backdrop" class="absolute inset-0 bg-zinc-950/50 backdrop-blur-xs"></div>
+    
+    <!-- Modal Container -->
+    <div class="relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl p-6 overflow-hidden z-50 transform scale-95 opacity-0 transition-all duration-200" id="delete-modal-content">
+      
+      <button id="close-delete-modal" class="absolute top-4 right-4 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 rounded-lg transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex gap-4 items-start pt-2">
+        <div class="flex-shrink-0 p-3 rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+
+        <div class="space-y-2">
+          <h3 id="delete-modal-title" class="text-lg font-bold font-display text-zinc-900 dark:text-zinc-50">Delete Task</h3>
+          <p id="delete-modal-message" class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            Are you sure you want to delete this task? This action cannot be undone.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-zinc-100 dark:border-zinc-800/80">
+        <button type="button" id="cancel-delete-btn" class="px-4 py-2 text-sm font-semibold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl shadow-lg transition-colors">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Floating Toast Notifications System -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none px-4 sm:px-0">
+    <!-- Toast items dynamically generated by JavaScript -->
+  </div>
+
+  <!-- Lucide Icon Library Integration (Loads Lucide Icons CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Core Script Injection -->
+  <script src="script.js"></script>
+</body>
+</html>
